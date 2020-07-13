@@ -1,0 +1,13 @@
+---
+# This playbook prints a simple debug message and set_stats
+- name: Echo Hello, world!
+  hosts: localhost
+  gather_facts: yes
+
+  tasks:
+  - debug: msg="Hello, world!"
+  - set_stats:
+      data:
+        my_date: "{{ ansible_date_time.date }}"
+        my_time: "{{ ansible_date_time.time }}"
+        my_var: 1
