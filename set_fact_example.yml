@@ -2,9 +2,14 @@
 # This playbook prints a simple debug message
 - name: Echo Hello, world!
   hosts: localhost
+  gather_facts: yes
   
   tasks:
   - debug: msg="Hello, world!"
   - set_fact:
-      my_date: ansible_date_time.date
-      my_time: ansible_date_time.time
+      my_date: "{{ ansible_date_time.date }}"
+      my_time: "{{ ansible_date_time.time }}"
+      my_var: 1
+  - debug: var=my_date
+  - debug: var=my_time
+  - debug: var=my_var
