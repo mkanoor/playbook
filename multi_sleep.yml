@@ -1,0 +1,22 @@
+- hosts: localhost
+  user: root
+  connection: local
+  gather_facts: no
+  tasks:
+  - debug:
+      msg: "Sleeping First Time"
+  - name: First Wait
+    wait_for:
+      timeout: 30
+  - debug:
+      msg: "Sleeping Second time"
+  - name: Second Wait
+    wait_for:
+      timeout: 30
+  - debug:
+      msg: "Sleeping Third time"
+  - name: Third Wait
+    wait_for:
+      timeout: 30
+  - debug:
+      msg: "Done Sleeping"
