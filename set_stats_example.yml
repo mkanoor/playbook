@@ -14,5 +14,10 @@
         my_date: "{{ ansible_date_time.date }}"
         my_time: "{{ ansible_date_time.time }}"
         my_var: 1
-        options: options
-        ips: ips
+        options:
+          name: 'Fred Flintstone'
+          age: 45
+        ips:
+          - 1.1.1.94
+          - 1.1.1.93
+          - 1.1.1.97
