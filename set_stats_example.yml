@@ -3,6 +3,9 @@
 - name: Echo Hello, world!
   hosts: localhost
   gather_facts: yes
+  vars:
+    options: { 'name': 'Fred Flintstone', 'address': 'Bedrock' }
+    ips: ['1.1.1.93', '1.1.1.94', '1.1.1.97']
 
   tasks:
   - debug: msg="Hello, world!"
@@ -11,3 +14,5 @@
         my_date: "{{ ansible_date_time.date }}"
         my_time: "{{ ansible_date_time.time }}"
         my_var: 1
+        options: {{ options }}
+        ips: {{ ips }}
