@@ -3,10 +3,6 @@
 - name: Echo Hello, world!
   hosts: localhost
   gather_facts: yes
-  vars:
-    options: { 'name': 'Fred Flintstone', 'address': 'Bedrock' }
-    ips: ['1.1.1.93', '1.1.1.94', '1.1.1.97']
-
   tasks:
   - debug: msg="Hello, world!"
   - set_stats:
@@ -14,10 +10,13 @@
         my_date: "{{ ansible_date_time.date }}"
         my_time: "{{ ansible_date_time.time }}"
         my_var: 1
-        options:
+        expose_to_cloud_redhat_com_friend: 'Barney Rubble'
+        expose_to_cloud_redhat_com_person:
           name: 'Fred Flintstone'
           age: 45
-        ips:
+          city: 'Bedrock'
+          catchphrase: 'Yabba Dabba Doo'
+        expose_to_cloud_redhat_com_ips:
           - 1.1.1.94
           - 1.1.1.93
           - 1.1.1.97
