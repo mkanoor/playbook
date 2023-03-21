@@ -1,0 +1,7 @@
+---
+  - hosts: localhost 
+    tasks:
+    - name: Fail intentionally
+      ansible.builtin.fail:
+          msg: This is an intentional failure
+      when: true
