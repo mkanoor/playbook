@@ -1,0 +1,7 @@
+---
+# This playbook prints the matching event from eda
+- name: Rulebook test
+  hosts: localhost
+  
+  tasks:
+  - debug: msg="{{ ansible_eda.event }}"

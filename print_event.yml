@@ -1,0 +1,12 @@
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Print event
+      when: ansible_eda.event is defined
+      ansible.builtin.debug:
+        msg: "Event matched: {{ ansible_eda.event }}"
+
+    - name: Print events
+      when: ansible_eda.events is defined
+      ansible.builtin.debug:
+        msg: "Event matched: {{ ansible_eda.events }}"
