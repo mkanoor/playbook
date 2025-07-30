@@ -5,3 +5,5 @@
   
   tasks:
   - debug: msg="Hello, world!"
+  - shell: sleep '{{ sleep | default(0) }}'
+  - debug: msg="Bye, world!"
