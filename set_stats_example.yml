@@ -16,6 +16,8 @@
           age: 45
           city: 'Bedrock'
           catchphrase: 'Yabba Dabba Doo'
+          api_key: abcdedfffff
+          looks_like_password: 3456789
         expose_to_cloud_redhat_com_ips:
           - 1.1.1.94
           - 1.1.1.93
