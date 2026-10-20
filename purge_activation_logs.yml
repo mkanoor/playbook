@@ -3,9 +3,9 @@
   hosts: localhost
   gather_facts: false
   vars:
-    eda_url: "https://example.com"
+    aap_hostname: "https://example.com"
+    aap_validate_certs: true 
     retention_days: 14 
-    verify_ssl: true 
 
   tasks:
     - name: Calculate the ISO 8601 Cutoff Date via Pure Jinja Math
@@ -21,19 +21,18 @@
 
     - name: Execute Global Admin Log Purge Request
       ansible.builtin.uri:
-        url: "{{ eda_url }}/api/eda/v1/logs/purge/"
+        url: "{{ aap_hostname }}/api/eda/v1/logs/purge/"
         method: POST
         status_code: 200
         body_format: json
-        url_username: "{{ eda_username }}"
-        url_password: "{{ eda_password }}"
+        url_username: "{{ aap_username }}"
+        url_password: "{{ aap_password }}"
         force_basic_auth: true
         body:
           before_date: "{{ cutoff_datetime }}"
-        validate_certs: "{{ verify_ssl }}"
+        validate_certs: "{{ aap_validate_certs }}"
       register: purge_response
 
     - name: Report Purge Job Status
       ansible.builtin.debug:
         msg: "EDA Log Purge executed successfully. Server Response Status: {{ purge_response.status }}"
-
