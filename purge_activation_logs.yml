@@ -1,0 +1,39 @@
+---
+- name: Single-Step EDA Global Log Purge via Basic Auth
+  hosts: localhost
+  gather_facts: false
+  vars:
+    eda_url: "https://example.com"
+    retention_days: 14 
+    verify_ssl: true 
+
+  tasks:
+    - name: Calculate the ISO 8601 Cutoff Date via Pure Jinja Math
+      ansible.builtin.set_fact:
+        # 1. '%s' | strftime converts the current time to a Unix timestamp integer
+        # 2. We subtract the retention days converted to seconds (days * 86400)
+        # 3. The final outer strftime formats the result into the exact ISO 8601 string
+        cutoff_datetime: "{{ '%Y-%m-%dT%H:%M:%SZ' | strftime( ('%s' | strftime | int) - (retention_days | int * 86400) ) }}"
+
+    - name: Debug Output calculated Cutoff String
+      ansible.builtin.debug:
+        msg: "Calculated cutoff ISO timestamp is: {{ cutoff_datetime }}"
+
+    - name: Execute Global Admin Log Purge Request
+      ansible.builtin.uri:
+        url: "{{ eda_url }}/api/eda/v1/logs/purge/"
+        method: POST
+        status_code: 200
+        body_format: json
+        url_username: "{{ eda_username }}"
+        url_password: "{{ eda_password }}"
+        force_basic_auth: true
+        body:
+          before_date: "{{ cutoff_datetime }}"
+        validate_certs: "{{ verify_ssl }}"
+      register: purge_response
+
+    - name: Report Purge Job Status
+      ansible.builtin.debug:
+        msg: "EDA Log Purge executed successfully. Server Response Status: {{ purge_response.status }}"
+
