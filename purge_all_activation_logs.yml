@@ -1,0 +1,24 @@
+---
+- name: Single-Step EDA Global Log Purge all via Basic Auth
+  hosts: localhost
+  gather_facts: false
+  vars:
+    aap_hostname: "https://example.com"
+    aap_validate_certs: true 
+
+  tasks:
+    - name: Execute Global Admin Log Purge All Request
+      ansible.builtin.uri:
+        url: "{{ aap_hostname }}/api/eda/v1/logs/purge/"
+        method: POST
+        status_code: 200
+        body_format: json
+        url_username: "{{ aap_username }}"
+        url_password: "{{ aap_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ aap_validate_certs }}"
+      register: purge_response
+
+    - name: Report Purge Job Status
+      ansible.builtin.debug:
+        msg: "EDA Log Purge executed successfully. Server Response Status: {{ purge_response.status }}"
