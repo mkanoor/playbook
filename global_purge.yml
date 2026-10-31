@@ -1,0 +1,33 @@
+---
+# Global Purge with retention-duration
+# Delete EDA process logs across all activations older than the configured duration, including
+# previous audit markers and logs without an associated process.
+- name: Global Purge with retention-duration
+  hosts: localhost
+  gather_facts: false
+  vars:
+    aap_hostname: "https://example.com"
+    aap_validate_certs: true
+    retention_duration: "PT5M"
+
+  tasks:
+    - name: Queue global log purge
+      ansible.builtin.uri:
+        url: "{{ aap_hostname | rstrip('/') }}/api/eda/v1/logs/purge/"
+        method: POST
+        status_code: 202
+        body_format: json
+        body:
+          purge-all-logs: true
+          retention_duration: "{{ retention_duration }}"
+          audit_trail: true
+        url_username: "{{ aap_username }}"
+        url_password: "{{ aap_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ aap_validate_certs }}"
+      register: purge_response
+      # no_log: true
+
+    - name: Report queued purge job
+      ansible.builtin.debug:
+        msg: "EDA log purge queued. Job ID: {{ purge_response.json.job_id }}"
