@@ -13,7 +13,7 @@
   tasks:
     - name: Queue global log purge
       ansible.builtin.uri:
-        url: "{{ aap_hostname | rstrip('/') }}/api/eda/v1/logs/purge/"
+        url: "{{ aap_hostname | regex_replace('/$', '') }}/api/eda/v1/logs/purge/"
         method: POST
         status_code: 202
         body_format: json
