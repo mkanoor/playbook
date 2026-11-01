@@ -1,0 +1,51 @@
+---
+# Global Purge with retention-duration supporting both Token and Basic Auth
+- name: Global Purge with retention-duration
+  hosts: localhost
+  gather_facts: false
+  vars:
+    aap_hostname: "https://example.com"
+    aap_validate_certs: true
+    retention_duration: "PT5M"
+
+    # Define either aap_token OR (aap_username + aap_password)
+    # aap_token: "your_oauth_or_pat_token_here"
+    aap_username: "admin"
+    aap_password: "password123"
+
+  tasks:
+    - name: Fail if no authentication method is provided
+      ansible.builtin.assert:
+        that:
+          - (aap_token is defined and aap_token | length > 0) or
+            (aap_username is defined and aap_password is defined and aap_username | length > 0)
+        fail_msg: "You must provide either 'aap_token' or both 'aap_username' and 'aap_password'."
+
+    - name: Queue global log purge
+      ansible.builtin.uri:
+        url: "{{ aap_hostname | regex_replace('/$', '') }}/api/eda/v1/logs/purge/"
+        method: POST
+        status_code: 202
+        body_format: json
+        body:
+          purge-all-logs: true
+          retention_duration: "{{ retention_duration }}"
+          audit_trail: true
+        # Token Auth: injected into headers if aap_token is set
+        headers: >-
+          {{
+            {'Authorization': 'Bearer ' ~ aap_token}
+            if (aap_token is defined and aap_token | length > 0)
+            else {}
+          }}
+        # Basic Auth: omitted if aap_token is used or if credentials are empty
+        url_username: "{{ aap_username if (aap_token is not defined or aap_token | length == 0) and aap_username is defined else omit }}"
+        url_password: "{{ aap_password if (aap_token is not defined or aap_token | length == 0) and aap_password is defined else omit }}"
+        force_basic_auth: "{{ true if (aap_token is not defined or aap_token | length == 0) and aap_username is defined else omit }}"
+        validate_certs: "{{ aap_validate_certs }}"
+      register: purge_response
+      no_log: true
+
+    - name: Report queued purge job
+      ansible.builtin.debug:
+        msg: "EDA log purge queued. Job ID: {{ purge_response.json.job_id }}"
